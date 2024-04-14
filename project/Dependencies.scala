@@ -11,7 +11,7 @@ object Dependencies {
     val keyPool    = "0.4.9"
 
     val lettuce = "6.3.2.RELEASE"
-    val logback = "1.5.3"
+    val logback = "1.5.5"
 
     val kindProjector = "0.13.3"
 
