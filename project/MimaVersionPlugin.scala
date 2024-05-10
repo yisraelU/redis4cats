@@ -8,7 +8,7 @@ import sbt.Keys.*
 import scala.sys.process.*
 import scala.util.Try
 
-// Adapted from https://github.com/djspiewak/sbt-spiewak
+// Adapted from https://github.com/djspiewak/sbt-spiewak  and https://github.com/disneystreaming/smithy4s/blob/series/0.18/project/MimaVersionPlugin.scala
 object MimaVersionPlugin extends AutoPlugin {
 
   override def requires =
