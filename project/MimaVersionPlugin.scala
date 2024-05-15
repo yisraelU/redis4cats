@@ -100,6 +100,7 @@ object MimaVersionPlugin extends AutoPlugin {
         val tags = scala.util
           .Try("git tag --list".!!.split("\n").map(_.trim))
           .getOrElse(new Array[String](0))
+        println(tags.mkString("\n"))
 
         // in semver, we allow breakage in minor releases if major is 0, otherwise not
         val Pattern =
