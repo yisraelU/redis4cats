@@ -703,8 +703,8 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   override def getRange(key: K, start: Long, end: Long): F[Option[V]] =
     async.flatMap(_.getrange(key, start, end).futureLift.map(Option.apply))
 
-  override def strLen(key: K): F[Option[Long]] =
-    async.flatMap(_.strlen(key).futureLift.map(x => Option(Long.unbox(x))))
+  override def strLen(key: K): F[Long] =
+    async.flatMap(_.strlen(key).futureLift.map(x => Long.unbox(x)))
 
   override def mGet(keys: Set[K]): F[Map[K, V]] =
     async
@@ -741,11 +741,11 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   override def hVals(key: K): F[List[V]] =
     async.flatMap(_.hvals(key).futureLift.map(_.asScala.toList))
 
-  override def hStrLen(key: K, field: K): F[Option[Long]] =
-    async.flatMap(_.hstrlen(key, field).futureLift.map(x => Option(Long.unbox(x))))
+  override def hStrLen(key: K, field: K): F[Long] =
+    async.flatMap(_.hstrlen(key, field).futureLift.map(x => Long.unbox(x)))
 
-  override def hLen(key: K): F[Option[Long]] =
-    async.flatMap(_.hlen(key).futureLift.map(x => Option(Long.unbox(x))))
+  override def hLen(key: K): F[Long] =
+    async.flatMap(_.hlen(key).futureLift.map(x => Long.unbox(x)))
 
   override def hSet(key: K, field: K, value: V): F[Boolean] =
     async.flatMap(_.hset(key, field, value).futureLift.map(x => Boolean.box(x)))
@@ -821,8 +821,8 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   override def lIndex(key: K, index: Long): F[Option[V]] =
     async.flatMap(_.lindex(key, index).futureLift.map(Option.apply))
 
-  override def lLen(key: K): F[Option[Long]] =
-    async.flatMap(_.llen(key).futureLift.map(x => Option(Long.unbox(x))))
+  override def lLen(key: K): F[Long] =
+    async.flatMap(_.llen(key).futureLift.map(x => Long.unbox(x)))
 
   override def lRange(key: K, start: Long, stop: Long): F[List[V]] =
     async.flatMap(_.lrange(key, start, stop).futureLift.map(_.asScala.toList))
@@ -1074,14 +1074,14 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
     res.map(x => Long.box(x))
   }
 
-  override def zCard(key: K): F[Option[Long]] =
-    async.flatMap(_.zcard(key).futureLift.map(x => Option(Long.unbox(x))))
+  override def zCard(key: K): F[Long] =
+    async.flatMap(_.zcard(key).futureLift.map(x => Long.unbox(x)))
 
-  override def zCount[T: Numeric](key: K, range: ZRange[T]): F[Option[Long]] =
-    async.flatMap(_.zcount(key, range.asJavaRange).futureLift.map(x => Option(Long.unbox(x))))
+  override def zCount[T: Numeric](key: K, range: ZRange[T]): F[Long] =
+    async.flatMap(_.zcount(key, range.asJavaRange).futureLift.map(x => Long.unbox(x)))
 
-  override def zLexCount(key: K, range: ZRange[V]): F[Option[Long]] =
-    async.flatMap(_.zlexcount(key, JRange.create[V](range.start, range.end)).futureLift.map(x => Option(Long.unbox(x))))
+  override def zLexCount(key: K, range: ZRange[V]): F[Long] =
+    async.flatMap(_.zlexcount(key, JRange.create[V](range.start, range.end)).futureLift.map(x => Long.unbox(x)))
 
   override def zRange(key: K, start: Long, stop: Long): F[List[V]] =
     async.flatMap(_.zrange(key, start, stop).futureLift.map(_.asScala.toList))

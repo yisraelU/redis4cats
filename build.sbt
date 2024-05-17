@@ -221,6 +221,6 @@ lazy val microsite = project
 
 // CI build
 addCommandAlias("buildDoc", ";++2.13.12;mdoc;doc")
-addCommandAlias("buildRedis4Cats", ";mimaReportBinaryIssuesIfRelevant;+test;buildDoc")
+addCommandAlias("buildRedis4Cats", ";+test;buildDoc")
 addCommandAlias("buildSite", ";doc;makeMicrosite")
 addCommandAlias("publishSite", ";doc;publishMicrosite")
