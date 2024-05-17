@@ -220,8 +220,9 @@ trait TestScenarios { self: FunSuite =>
   }
 
   def keysScenario(redis: RedisCommands[IO, String, String]): IO[Unit] = {
-    val key1 = "key1"
-    val key2 = "key2"
+    val key1    = "key1"
+    val key2    = "key2"
+    val keyCopy = "keyCopy"
     for {
       x <- redis.get(key1)
       _ <- IO(assertEquals(x, None))
@@ -232,6 +233,15 @@ trait TestScenarios { self: FunSuite =>
       _ <- redis.set(key1, "some value")
       exist2 <- redis.exists(key1)
       _ <- IO(assert(exist2))
+      dump <- redis.dump(key1)
+      _ <- IO(assert(dump.nonEmpty))
+      _ <- redis.restore(key1, dump.get, RestoreArgs().replace(true))
+      restored <- redis.get(key1)
+      _ <- IO(assertEquals(restored, Some("some value")))
+      copy <- redis.copy(key1, keyCopy)
+      _ <- IO(assertEquals(copy, true))
+      _ <- redis.get(keyCopy).map(value => assert(value.contains("some value")))
+      _ <- redis.del(keyCopy)
       idletime2 <- redis.objectIdletime(key1)
       _ <- IO(assert(idletime2.isDefined))
       _ <- redis.mSet(Map(key2 -> "some value 2"))

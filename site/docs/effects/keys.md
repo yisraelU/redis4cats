@@ -35,6 +35,7 @@ import cats.effect.IO
 
 val key = "users"
 
+
 commandsApi.use { redis => // KeyCommands[IO, String]
   for {
     _ <- redis.del(key)

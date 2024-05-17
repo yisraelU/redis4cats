@@ -90,6 +90,25 @@ object effects {
     }
   }
 
+  final case class CopyArgs(destinationDb: Option[Long], replace: Option[Boolean])
+  object CopyArgs {
+    def apply(destinationDb: Long): CopyArgs                   = CopyArgs(Some(destinationDb), None)
+    def apply(replace: Boolean): CopyArgs                      = CopyArgs(None, Some(replace))
+    def apply(destinationDb: Long, replace: Boolean): CopyArgs = CopyArgs(Some(destinationDb), Some(replace))
+  }
+
+  final case class RestoreArgs(
+      ttl: Option[Long] = None,
+      replace: Option[Boolean] = None,
+      absttl: Option[Boolean] = None,
+      idleTime: Option[Long] = None
+  ) {
+    def replace(replace: Boolean): RestoreArgs = copy(replace = Some(replace))
+    def ttl(ttl: Long): RestoreArgs            = copy(ttl = Some(ttl))
+    def absttl(absttl: Boolean): RestoreArgs   = copy(absttl = Some(absttl))
+    def idleTime(idleTime: Long): RestoreArgs  = copy(idleTime = Some(idleTime))
+  }
+
   case class ScanArgs(`match`: Option[String], count: Option[Long]) {
     def underlying: JScanArgs = {
       val u = new JScanArgs
