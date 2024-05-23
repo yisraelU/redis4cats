@@ -30,6 +30,10 @@ object Dependencies {
 
     val redisClient = "io.lettuce" % "lettuce-core" % V.lettuce
 
+    val literally = "org.typelevel" %% "literally" % "1.2.0"
+
+    def reflect(version:String): ModuleID = "org.scala-lang" % "scala-reflect" % version
+
     // Examples libraries
     val catsEffect    = "org.typelevel" %% "cats-effect" % V.catsEffect
     val circeCore     = "io.circe" %% "circe-core" % V.circe
