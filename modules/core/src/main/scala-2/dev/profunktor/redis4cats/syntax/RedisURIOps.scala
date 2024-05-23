@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package dev.profunktor.redis4cats
+package dev.profunktor.redis4cats.syntax
 
 import dev.profunktor.redis4cats.connection.RedisURI
-import org.typelevel.literally.Literally
+import dev.profunktor.redis4cats.syntax.macros
 
-object macros {
-
-  object redis extends Literally[RedisURI] {
-
-    override def validate(c: Context)(s: String): Either[String, c.Expr[RedisURI]] = {
-      import c.universe._
-      RedisURI.fromString(s) match {
-        case Left(e)  => Left(e.getMessage)
-        case Right(_) => Right(c.Expr(q"dev.profunktor.redis4cats.connection.RedisURI.unsafeFromString($s)"))
-      }
-    }
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[RedisURI] = apply(c)(args: _*)
-  }
-
+class RedisURIOps(val sc: StringContext) extends AnyVal {
+  def redis(args: Any*): RedisURI = macro macros.RedisLiteral.make
 }
+
+trait RedisSyntax {
+  implicit def toRedisURIOps(sc: StringContext): RedisURIOps =
+    new RedisURIOps(sc)
+}
+
+object literals extends RedisSyntax
+
+

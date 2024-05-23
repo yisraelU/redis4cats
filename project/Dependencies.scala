@@ -32,7 +32,7 @@ object Dependencies {
 
     val literally = "org.typelevel" %% "literally" % "1.2.0"
 
-    def reflect(version:String): ModuleID = "org.scala-lang" % "scala-reflect" % version
+    def reflect(version: String): ModuleID = "org.scala-lang" % "scala-reflect" % version
 
     // Examples libraries
     val catsEffect    = "org.typelevel" %% "cats-effect" % V.catsEffect
