@@ -107,6 +107,11 @@ lazy val `redis4cats-root` = project
 lazy val `redis4cats-core` = project
   .in(file("modules/core"))
   .settings(commonSettings: _*)
+  .settings(libraryDependencies += Libraries.literally)
+  .settings(
+    libraryDependencies ++=
+        pred(scalaVersion.value.startsWith("3"), t = Seq.empty, f = Seq(Libraries.reflect(scalaVersion.value)))
+  )
   .settings(isMimaEnabled := true)
   .settings(Test / parallelExecution := false)
   .enablePlugins(AutomateHeaderPlugin)

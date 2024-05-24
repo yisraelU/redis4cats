@@ -19,7 +19,7 @@ object MimaVersionPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   object autoImport {
-    val ReleaseTag = """^v((?:\d+\.){2}\d+(?:-.*)?)$""".r
+    val ReleaseTag           = """^v((?:\d+\.){2}\d+(?:-.*)?)$""".r
     lazy val mimaBaseVersion = git.baseVersion
     lazy val mimaReportBinaryIssuesIfRelevant = taskKey[Unit](
       "A wrapper around the mima task which ensures publishArtifact is set to true"
@@ -45,44 +45,45 @@ object MimaVersionPlugin extends AutoPlugin {
 
   override def buildSettings: Seq[Setting[_]] =
     GitPlugin.autoImport.versionWithGit ++ Seq(
-      git.gitTagToVersionNumber := {
-        case ReleaseTag(version) => Some(version)
-        case _                   => None
-      },
-      git.formattedShaVersion := {
-        val suffix = git.makeUncommittedSignifierSuffix(
-          git.gitUncommittedChanges.value,
-          git.uncommittedSignifier.value
+          git.gitTagToVersionNumber := {
+              case ReleaseTag(version) => Some(version)
+              case _                   => None
+            },
+          git.formattedShaVersion := {
+            val suffix = git.makeUncommittedSignifierSuffix(
+              git.gitUncommittedChanges.value,
+              git.uncommittedSignifier.value
+            )
+
+            val description = Try("git describe --tags --match v*".!!.trim).toOption
+            val optDistance = description collect {
+                  case Description(distance) =>
+                    distance + "-"
+                }
+
+            val distance = optDistance.getOrElse("")
+
+            git.gitHeadCommit.value map { _.substring(0, 7) } map { sha =>
+              autoImport.mimaBaseVersion.value + "-" + distance + sha + suffix
+            }
+          },
+          git.gitUncommittedChanges := Try("git status -s".!!.trim.length > 0)
+                .getOrElse(true),
+          git.gitHeadCommit := Try("git rev-parse HEAD".!!.trim).toOption,
+          git.gitCurrentTags := Try(
+                "git tag --contains HEAD".!!.trim.split("\\s+").toList.filter(_ != "")
+              ).toOption.toList.flatten
         )
-
-        val description = Try("git describe --tags --match v*".!!.trim).toOption
-        val optDistance = description collect { case Description(distance) =>
-          distance + "-"
-        }
-
-        val distance = optDistance.getOrElse("")
-
-        git.gitHeadCommit.value map { _.substring(0, 7) } map { sha =>
-          autoImport.mimaBaseVersion.value + "-" + distance + sha + suffix
-        }
-      },
-      git.gitUncommittedChanges := Try("git status -s".!!.trim.length > 0)
-        .getOrElse(true),
-      git.gitHeadCommit := Try("git rev-parse HEAD".!!.trim).toOption,
-      git.gitCurrentTags := Try(
-        "git tag --contains HEAD".!!.trim.split("\\s+").toList.filter(_ != "")
-      ).toOption.toList.flatten
-    )
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     isMimaEnabled := false,
     mimaReportBinaryIssuesIfRelevant := filterTaskWhereRelevant(
-      mimaReportBinaryIssues
-    ).value,
- mimaPreviousArtifacts := {
+          mimaReportBinaryIssues
+        ).value,
+    mimaPreviousArtifacts := {
       val current = version.value
-      val org = organization.value
-      val n = moduleName.value
+      val org     = organization.value
+      val n       = moduleName.value
 
       val FullTag = """^(\d+)\.(\d+)\.(\d+).*""" r
       val TagBase = """^(\d+)\.(\d+).*""" r
@@ -100,8 +101,6 @@ object MimaVersionPlugin extends AutoPlugin {
         val tags = scala.util
           .Try("git tag --list".!!.split("\n").map(_.trim))
           .getOrElse(new Array[String](0))
-        println(tags.mkString("\n"))
-
         // in semver, we allow breakage in minor releases if major is 0, otherwise not
         val Pattern =
           if (isPre)
@@ -109,9 +108,10 @@ object MimaVersionPlugin extends AutoPlugin {
           else
             s"^v($major\\.\\d+\\.\\d+)$$".r
 
-        val versions = tags collect { case Pattern(version) =>
-          version
-        }
+        val versions = tags collect {
+              case Pattern(version) =>
+                version
+            }
 
         def lessThanPatch(patch: String): String => Boolean = { tagVersion =>
           val FullTag(_, _, tagPatch) = tagVersion
@@ -123,17 +123,15 @@ object MimaVersionPlugin extends AutoPlugin {
           .filterNot {
             val patchPredicate =
               maybePatch
-                // if mimaBaseVersion has a patch version, exclude this version if the patch is smaller
+              // if mimaBaseVersion has a patch version, exclude this version if the patch is smaller
                 .map(lessThanPatch(_))
                 // else keep the version
-                .getOrElse { (_: String) => false }
+                .getOrElse((_: String) => false)
             v => patchPredicate(v)
           }
 
         notCurrent
-          .map(v =>
-            projectID.value.withRevision(v).withExplicitArtifacts(Vector.empty)
-          )
+          .map(v => projectID.value.withRevision(v).withExplicitArtifacts(Vector.empty))
           .toSet
       }
     }
