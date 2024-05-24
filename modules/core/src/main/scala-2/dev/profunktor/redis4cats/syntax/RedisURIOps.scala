@@ -17,7 +17,6 @@
 package dev.profunktor.redis4cats.syntax
 
 import dev.profunktor.redis4cats.connection.RedisURI
-import dev.profunktor.redis4cats.syntax.macros
 
 class RedisURIOps(val sc: StringContext) extends AnyVal {
   def redis(args: Any*): RedisURI = macro macros.RedisLiteral.make
