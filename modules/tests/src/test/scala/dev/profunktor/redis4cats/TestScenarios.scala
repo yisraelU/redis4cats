@@ -222,7 +222,7 @@ trait TestScenarios { self: FunSuite =>
   def keysScenario(redis: RedisCommands[IO, String, String]): IO[Unit] = {
     val key1    = "key1"
     val key2    = "key2"
-    val keyCopy = "keyCopy"
+    val keyCopy = "{key1}Copy"
     for {
       x <- redis.get(key1)
       _ <- IO(assertEquals(x, None))
