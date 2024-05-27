@@ -115,7 +115,7 @@ object RedisClusterClient {
           )
           client.getPartitions
 
-        case All(Periodic(interval), Adaptive(timeout)) =>
+        case Both(Periodic(interval), Adaptive(timeout)) =>
           client.setOptions(
             ClusterClientOptions
               .builder()
