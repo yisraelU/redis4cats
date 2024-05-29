@@ -1265,6 +1265,15 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   override val flushAll: F[Unit] =
     async.flatMap(_.flushall().futureLift.void)
 
+  override def flushAll(mode: FlushMode): F[Unit] =
+    async.flatMap(_.flushall(mode.asJava).futureLift.void)
+
+  override val flushDb: F[Unit] =
+    async.flatMap(_.flushdb().futureLift.void)
+
+  override def flushDb(mode: FlushMode): F[Unit] =
+    async.flatMap(_.flushdb(mode.asJava).futureLift.void)
+
   override def keys(key: K): F[List[K]] =
     async.flatMap(_.keys(key).futureLift.map(_.asScala.toList))
 

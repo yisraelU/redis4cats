@@ -104,7 +104,14 @@ object effects {
     def apply(`match`: String, count: Long): ScanArgs = ScanArgs(Some(`match`), Some(count))
   }
 
-  sealed trait FlushMode
+  sealed trait FlushMode {
+    def asJava: io.lettuce.core.FlushMode =
+      this match {
+        case FlushMode.Sync  => io.lettuce.core.FlushMode.SYNC
+        case FlushMode.Async => io.lettuce.core.FlushMode.ASYNC
+      }
+
+  }
   object FlushMode {
     case object Sync extends FlushMode
     case object Async extends FlushMode

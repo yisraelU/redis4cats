@@ -16,6 +16,8 @@
 
 package dev.profunktor.redis4cats.algebra
 
+import dev.profunktor.redis4cats.effects.FlushMode
+
 import java.time.Instant
 
 trait ServerCommands[F[_], K] extends Flush[F, K] with Diagnostic[F]
@@ -23,6 +25,9 @@ trait ServerCommands[F[_], K] extends Flush[F, K] with Diagnostic[F]
 trait Flush[F[_], K] {
   def keys(key: K): F[List[K]]
   def flushAll: F[Unit]
+  def flushAll(mode: FlushMode): F[Unit]
+  def flushDb: F[Unit]
+  def flushDb(mode: FlushMode): F[Unit]
 }
 
 trait Diagnostic[F[_]] {
