@@ -47,9 +47,11 @@ import io.lettuce.core.{
   FlushMode => JFlushMode,
   FunctionRestoreMode => JFunctionRestoreMode,
   GetExArgs => JGetExArgs,
+  CopyArgs => JCopyArgs,
   Limit => JLimit,
   Range => JRange,
   ReadFrom => JReadFrom,
+  RestoreArgs => JRestoreArgs,
   ScanCursor => JScanCursor,
   SetArgs => JSetArgs
 }
@@ -467,9 +469,18 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   def sync: F[RedisClusterSyncCommands[K, V]] =
     if (cluster) conn.clusterSync else conn.sync.widen
 
-  /******************************* Keys API *************************************/
+  /** ***************************** Keys API ************************************ */
+  override def copy(source: K, destination: K): F[Boolean] =
+    async.flatMap(_.copy(source, destination).futureLift.map(x => Boolean.box(x)))
+
+  override def copy(source: K, destination: K, copyArgs: CopyArgs): F[Boolean] =
+    async.flatMap(_.copy(source, destination, copyArgs.asJava).futureLift.map(x => Boolean.box(x)))
+
   def del(key: K*): F[Long] =
     async.flatMap(_.del(key: _*).futureLift.map(x => Long.box(x)))
+
+  override def dump(key: K): F[Option[Array[Byte]]] =
+    async.flatMap(_.dump(key).futureLift.map(Option(_)))
 
   override def exists(key: K*): F[Boolean] =
     async.flatMap(_.exists(key: _*).futureLift.map(_ == key.size.toLong))
@@ -532,6 +543,12 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
 
   override def pttl(key: K): F[Option[FiniteDuration]] =
     async.flatMap(_.pttl(key).futureLift.map(toFiniteDuration(TimeUnit.MILLISECONDS)))
+
+  override def restore(key: K, value: Array[Byte]): F[Unit] =
+    async.flatMap(_.restore(key, 0, value).futureLift.void)
+
+  override def restore(key: K, value: Array[Byte], restoreArgs: RestoreArgs): F[Unit] =
+    async.flatMap(_.restore(key, value, restoreArgs.asJava).futureLift.void)
 
   override def scan: F[KeyScanCursor[K]] =
     async.flatMap(_.scan().futureLift.map(KeyScanCursor[K]))
@@ -1515,6 +1532,27 @@ private[redis4cats] trait RedisConversionOps {
       val start: Number = toJavaNumber(range.start)
       val end: Number   = toJavaNumber(range.end)
       JRange.create(start, end)
+    }
+  }
+
+  private[redis4cats] implicit class CopyArgOps(underlying: CopyArgs) {
+    def asJava: JCopyArgs = {
+      val jCopyArgs = new JCopyArgs()
+      underlying.destinationDb.foreach(jCopyArgs.destinationDb)
+      underlying.replace.foreach(jCopyArgs.replace)
+      jCopyArgs
+    }
+  }
+
+  private[redis4cats] implicit class RestoreArgOps(underlying: RestoreArgs) {
+
+    def asJava: JRestoreArgs = {
+      val u = new JRestoreArgs
+      underlying.ttl.foreach(u.ttl)
+      underlying.replace.foreach(u.replace)
+      underlying.absttl.foreach(u.absttl)
+      underlying.idleTime.foreach(u.idleTime)
+      u
     }
   }
 
