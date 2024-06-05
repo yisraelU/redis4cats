@@ -57,6 +57,7 @@ import io.lettuce.core.{
 }
 import org.typelevel.keypool.KeyPool
 
+import java.nio.charset.StandardCharsets
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration._
@@ -1340,7 +1341,40 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
       _.eval[output.Underlying](
         script,
         output.outputType,
-        // see comment in eval above
+        // see comment in eval above.
+        keys.toArray[Any].asInstanceOf[Array[K with Object]],
+        values: _*
+      ).futureLift.map(output.convert(_))
+    )
+
+  override def evalReadOnly(script: String, output: ScriptOutputType[V]): F[output.R] =
+    async
+      .flatMap(
+        _.evalReadOnly[output.Underlying](
+          script.getBytes(StandardCharsets.UTF_8),
+          output.outputType,
+          // see comment in eval above.
+          Array.emptyObjectArray.asInstanceOf[Array[K with Object]]
+        ).futureLift
+      )
+      .map(r => output.convert(r))
+
+  override def evalReadOnly(script: String, output: ScriptOutputType[V], keys: List[K]): F[output.R] =
+    async.flatMap(
+      _.evalReadOnly[output.Underlying](
+        script.getBytes(StandardCharsets.UTF_8),
+        output.outputType,
+        // see comment in eval above.
+        keys.toArray[Any].asInstanceOf[Array[K with Object]]
+      ).futureLift.map(output.convert(_))
+    )
+
+  override def evalReadOnly(script: String, output: ScriptOutputType[V], keys: List[K], values: List[V]): F[output.R] =
+    async.flatMap(
+      _.evalReadOnly[output.Underlying](
+        script.getBytes(StandardCharsets.UTF_8),
+        output.outputType,
+        // see comment in eval above.
         keys.toArray[Any].asInstanceOf[Array[K with Object]],
         values: _*
       ).futureLift.map(output.convert(_))
@@ -1356,7 +1390,7 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
       _.evalsha[output.Underlying](
         digest,
         output.outputType,
-        // see comment in eval above
+        // see comment in eval above.
         keys.toArray[Any].asInstanceOf[Array[K with Object]]
       ).futureLift.map(output.convert(_))
     )
@@ -1366,7 +1400,45 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
       _.evalsha[output.Underlying](
         digest,
         output.outputType,
-        // see comment in eval above
+        // see comment in eval above.
+        keys.toArray[Any].asInstanceOf[Array[K with Object]],
+        values: _*
+      ).futureLift.map(output.convert(_))
+    )
+
+  override def evalShaReadOnly(digest: String, output: ScriptOutputType[V]): F[output.R] =
+    async
+      .flatMap(
+        _.evalshaReadOnly[output.Underlying](
+          digest,
+          output.outputType,
+          // see comment in eval above.
+          Array.emptyObjectArray.asInstanceOf[Array[K with Object]]
+        ).futureLift
+      )
+      .map(output.convert(_))
+
+  override def evalShaReadOnly(digest: String, output: ScriptOutputType[V], keys: List[K]): F[output.R] =
+    async.flatMap(
+      _.evalshaReadOnly[output.Underlying](
+        digest,
+        output.outputType,
+        // see comment in eval above.
+        keys.toArray[Any].asInstanceOf[Array[K with Object]]
+      ).futureLift.map(output.convert(_))
+    )
+
+  override def evalShaReadOnly(
+      digest: String,
+      output: ScriptOutputType[V],
+      keys: List[K],
+      values: List[V]
+  ): F[output.R] =
+    async.flatMap(
+      _.evalshaReadOnly[output.Underlying](
+        digest,
+        output.outputType,
+        // see comment in eval above.
         keys.toArray[Any].asInstanceOf[Array[K with Object]],
         values: _*
       ).futureLift.map(output.convert(_))
