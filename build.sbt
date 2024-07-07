@@ -8,6 +8,26 @@ ThisBuild / evictionErrorLevel := Level.Info
 ThisBuild / mimaBaseVersion := "1.7.0"
 Test / parallelExecution := false
 
+val blue = "\u001b[34m"
+val reset = "\u001b[0m"
+
+def coloredPrompt(state: String,color:String): String = {
+  s"$color$state$reset"
+}
+
+
+ThisBuild / shellPrompt := { state =>
+  s"${coloredPrompt("[sbt]",blue)} redis4cats  λ "
+}
+
+/*promptTheme := PromptTheme(
+  -  List(
+    -    text("[sbt] ", fg(105)),
+    -    text(_ => "", fg(15)).padRight("")
+      -  )
+    -)*/
+
+
 // publishing
 ThisBuild / organization := "dev.profunktor"
 ThisBuild / homepage := Some(url("https://redis4cats.profunktor.dev/"))
