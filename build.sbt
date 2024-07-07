@@ -8,17 +8,13 @@ ThisBuild / evictionErrorLevel := Level.Info
 ThisBuild / mimaBaseVersion := "1.7.0"
 Test / parallelExecution := false
 
-val blue = "\u001b[34m"
+val blue  = "\u001b[34m"
 val reset = "\u001b[0m"
 
-def coloredPrompt(state: String,color:String): String = {
+def coloredPrompt(state: String, color: String): String =
   s"$color$state$reset"
-}
 
-
-ThisBuild / shellPrompt := { state =>
-  s"${coloredPrompt("[sbt]",blue)} redis4cats  λ "
-}
+ThisBuild / shellPrompt := { state => s"${coloredPrompt("[sbt]", blue)} redis4cats  λ " }
 
 /*promptTheme := PromptTheme(
   -  List(
@@ -26,7 +22,6 @@ ThisBuild / shellPrompt := { state =>
     -    text(_ => "", fg(15)).padRight("")
       -  )
     -)*/
-
 
 // publishing
 ThisBuild / organization := "dev.profunktor"
@@ -42,7 +37,6 @@ ThisBuild / developers := List(
 )
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
-
 
 def pred[A](p: Boolean, t: => Seq[A], f: => Seq[A]): Seq[A] =
   if (p) t else f
