@@ -1,5 +1,6 @@
-import com.typesafe.sbt.GitPlugin
-import com.typesafe.sbt.SbtGit.git
+import com.github.sbt.git.SbtGit.{GitKeys, git}
+import com.github.sbt.git.GitPlugin
+import com.github.sbt.git.GitRunner
 import com.typesafe.tools.mima.plugin.MimaPlugin
 import com.typesafe.tools.mima.plugin.MimaPlugin.autoImport.*
 import sbt.*

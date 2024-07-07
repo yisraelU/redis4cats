@@ -1,6 +1,5 @@
-import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
-import com.scalapenos.sbt.prompt._
-import Dependencies._
+import Dependencies.*
+import MimaVersionPlugin.autoImport.mimaBaseVersion
 import microsites.ExtraMdFileConfig
 
 ThisBuild / scalaVersion := "2.13.14"
@@ -24,12 +23,6 @@ ThisBuild / developers := List(
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-promptTheme := PromptTheme(
-  List(
-    text("[sbt] ", fg(105)),
-    text(_ => "redis4cats", fg(15)).padRight(" λ ")
-  )
-)
 
 def pred[A](p: Boolean, t: => Seq[A], f: => Seq[A]): Seq[A] =
   if (p) t else f
