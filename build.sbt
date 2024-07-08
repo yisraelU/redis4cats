@@ -16,13 +16,6 @@ def coloredPrompt(state: String, color: String): String =
 
 ThisBuild / shellPrompt := { state => s"${coloredPrompt("[sbt]", blue)} redis4cats  λ " }
 
-/*promptTheme := PromptTheme(
-  -  List(
-    -    text("[sbt] ", fg(105)),
-    -    text(_ => "", fg(15)).padRight("")
-      -  )
-    -)*/
-
 // publishing
 ThisBuild / organization := "dev.profunktor"
 ThisBuild / homepage := Some(url("https://redis4cats.profunktor.dev/"))
