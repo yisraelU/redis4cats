@@ -1,5 +1,4 @@
-import Dependencies.*
-import MimaVersionPlugin.autoImport.mimaBaseVersion
+import Dependencies._
 import microsites.ExtraMdFileConfig
 
 ThisBuild / scalaVersion := "2.13.14"
