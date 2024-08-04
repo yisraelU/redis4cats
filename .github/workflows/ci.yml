@@ -13,7 +13,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.2
+      - uses: actions/checkout@v4
 
       - name: "Starting up Redis 🐳"
         run: docker compose up -d
