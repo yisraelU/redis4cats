@@ -1,6 +1,6 @@
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 
-addSbtPlugin("com.typesafe"              % "sbt-mima-plugin" % "1.1.3")
+addSbtPlugin("com.typesafe"              % "sbt-mima-plugin" % "1.1.4")
 addSbtPlugin("com.github.sbt"            % "sbt-ci-release"  % "1.5.12")
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"    % "0.4.4")
 addSbtPlugin("de.heikoseeberger"         % "sbt-header"      % "5.10.0")
