@@ -16,6 +16,8 @@
 
 package dev.profunktor.redis4cats.algebra
 
+import scala.concurrent.duration.FiniteDuration
+
 trait HashCommands[F[_], K, V] extends HashGetter[F, K, V] with HashSetter[F, K, V] with HashIncrement[F, K, V] {
   def hDel(key: K, field: K, fields: K*): F[Long]
   def hExists(key: K, field: K): F[Boolean]
@@ -35,6 +37,12 @@ trait HashSetter[F[_], K, V] {
   def hSet(key: K, field: K, value: V): F[Boolean]
   def hSet(key: K, fieldValues: Map[K, V]): F[Long]
   def hSetNx(key: K, field: K, value: V): F[Boolean]
+  def hExpire(key: K, expire: Long,fields:K*): F[List[]]
+  def hPExpire(key: K, expire: FiniteDuration): F[Boolean]
+  def hExpireAt(key: K, expireAt: Long): F[Boolean]
+  def hPExpireAt(key: K, expireAt: Long): F[Boolean]
+  def hExpireTime(key: K): F[Option[Long]]
+  def hPersist(key: K): F[Boolean]
 
   @deprecated("In favor of hSet(key: K, fieldValues: Map[K, V])", since = "1.0.1")
   def hmSet(key: K, fieldValues: Map[K, V]): F[Unit]

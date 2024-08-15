@@ -773,6 +773,8 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   override def hSet(key: K, fieldValues: Map[K, V]): F[Long] =
     async.flatMap(_.hset(key, fieldValues.asJava).futureLift.map(x => Long.box(x)))
 
+  override def hExpire(key: K, expire: Long): F[Boolean] =
+    async.flatMap(_.hexpire(key, expire).futureLift.map(x => Boolean.box(x)))
   override def hSetNx(key: K, field: K, value: V): F[Boolean] =
     async.flatMap(_.hsetnx(key, field, value).futureLift.map(x => Boolean.box(x)))
 
