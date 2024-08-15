@@ -53,7 +53,8 @@ trait HashExpire[F[_], K] {
   def hExpire(key: K, expire: FiniteDuration, args: ExpireExistenceArg, fields: K*): F[List[Long]]
   def hExpireAt(key: K, expireAt: Instant, fields: K*): F[List[Long]]
   def hExpireAt(key: K, expireAt: Instant, args: ExpireExistenceArg, fields: K*): F[List[Long]]
-  def hExpireTime(key: K, fields: K*): F[List[Option[FiniteDuration]]]
+  def hExpireTime(key: K, fields: K*): F[List[Option[Instant]]]
+  def hpExpireTime(key: K, fields: K*): F[List[Option[Instant]]]
   def hPersist(key: K, fields: K*): F[List[Boolean]]
 }
 
