@@ -17,9 +17,9 @@
 package dev.profunktor.redis4cats
 
 import java.time.Instant
+import io.lettuce.core.{ GeoArgs, ScanArgs => JScanArgs, ScriptOutputType => JScriptOutputType }
 
-import io.lettuce.core.{ GeoArgs, ScriptOutputType => JScriptOutputType, ScanArgs => JScanArgs }
-
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 
 object effects {
@@ -207,5 +207,12 @@ object effects {
 
     /** Set expiry only when the new expiry is greater than current one */
     case object Lt extends ExpireExistenceArg
+  }
+
+  implicit class TimePrecisionOps(val duration: FiniteDuration) extends AnyVal {
+    def refine: Long = duration.unit match {
+      case TimeUnit.MILLISECONDS | TimeUnit.MICROSECONDS | TimeUnit.NANOSECONDS => duration.toMillis
+      case _                                                                    => duration.toSeconds
+    }
   }
 }
