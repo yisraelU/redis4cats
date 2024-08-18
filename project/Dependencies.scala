@@ -8,14 +8,16 @@ object Dependencies {
     val circe      = "0.14.9"
     val fs2        = "3.10.2"
     val log4cats   = "2.7.0"
-    val keyPool    = "0.4.9"
+    val keyPool    = "0.4.10"
 
     val lettuce = "6.4.0.RELEASE"
-    val logback = "1.5.6"
+    val logback = "1.5.7"
 
     val kindProjector = "0.13.3"
 
     val munit = "1.0.1"
+    val munitScalacheck = "1.0.0"
+
   }
 
   object Libraries {
@@ -46,7 +48,7 @@ object Dependencies {
     val catsLaws        = cats("core")
     val catsTestKit     = cats("testkit")
     val munitCore       = "org.scalameta" %% "munit" % V.munit
-    val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % V.munit
+    val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % V.munitScalacheck
   }
 
   object CompilerPlugins {
