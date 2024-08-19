@@ -16,9 +16,9 @@
 
 package dev.profunktor.redis4cats
 
-import java.time.Instant
 import io.lettuce.core.{ GeoArgs, ScanArgs => JScanArgs, ScriptOutputType => JScriptOutputType }
 
+import java.time.Instant
 import scala.concurrent.duration.FiniteDuration
 
 object effects {

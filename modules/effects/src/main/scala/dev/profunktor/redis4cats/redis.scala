@@ -813,6 +813,7 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
         .map(_.asScala.map(x => Long.unbox(x)).toList)
     )
 
+  // milli precision command under hood
   override def hExpireTime(key: K, fields: K*): F[List[Option[Instant]]] =
     async.flatMap(
       _.hpexpiretime(key, fields: _*).futureLift.map(_.asScala.map(toEpoch).toList)
@@ -825,6 +826,14 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
 
   override def hPersist(key: K, fields: K*): F[List[Boolean]] =
     async.flatMap(_.hpersist(key, fields: _*).futureLift.map(_.asScala.map(l => l == 1).toList))
+
+  override def hpttl(key: K, fields: K*): F[List[Option[FiniteDuration]]] =
+    async.flatMap(
+      _.hpttl(key, fields: _*).futureLift.map(_.asScala.map(toFiniteDuration(TimeUnit.MILLISECONDS)).toList)
+    )
+
+  override def httl(key: K, fields: K*): F[List[Option[FiniteDuration]]] =
+    async.flatMap(_.httl(key, fields: _*).futureLift.map(_.asScala.map(toFiniteDuration(TimeUnit.SECONDS)).toList))
 
   override def hSetNx(key: K, field: K, value: V): F[Boolean] =
     async.flatMap(_.hsetnx(key, field, value).futureLift.map(x => Boolean.box(x)))
