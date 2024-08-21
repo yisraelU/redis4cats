@@ -2,7 +2,7 @@ version: "3.0"
 services:
   SingleNode:
     restart: always
-    image: redis:7.0.10
+    image: redis:7.2.5
     ports:
       - "6379:6379"
     environment:
@@ -11,7 +11,7 @@ services:
 
   ReplicaNode:
     restart: always
-    image: redis:7.0.10
+    image: redis:7.2.5
     ports:
       - "6380:6379"
     command: redis-server --replicaof SingleNode 6379
@@ -31,5 +31,6 @@ services:
       - "30005:30005"
       - "30006:30006"
     environment:
+      - IP=0.0.0.0
       - INITIAL_PORT=30001
       - DEBUG=false
