@@ -2,19 +2,19 @@ version: "3.0"
 services:
   SingleNode:
     restart: always
-    image: redis:7.2.5
+    image: valkey/valkey:7.2.6
     ports:
       - "6379:6379"
     environment:
       - DEBUG=false
-    command: redis-server --notify-keyspace-events KEA
+    command: valkey-server --notify-keyspace-events KEA
 
   ReplicaNode:
     restart: always
-    image: redis:7.2.5
+    image: valkey/valkey:7.2.6
     ports:
       - "6380:6379"
-    command: redis-server --replicaof SingleNode 6379
+    command: valkey-server --replicaof SingleNode 6379
     links:
       - SingleNode:SingleNode
     environment:
