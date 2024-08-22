@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Starting up Redis 🐳"
+      - name: "Starting up Valkey 🐳"
         run: docker compose up -d
 
       - name: "Cache for sbt & coursier ♨️"
@@ -36,5 +36,5 @@ jobs:
       - name: "Test for Binary Compatibility 📦"
         run: nix develop -c sbt 'mimaReportBinaryIssuesIfRelevant'
 
-      - name: "Shutting down Redis 🐳"
+      - name: "Shutting down Valkey 🐳"
         run: docker compose down
