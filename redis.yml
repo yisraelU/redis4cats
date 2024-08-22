@@ -33,3 +33,4 @@ services:
     environment:
       - INITIAL_PORT=30001
       - DEBUG=false
+      
