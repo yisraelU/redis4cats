@@ -58,13 +58,25 @@ private[pubsub] class LivePubSubCommands[F[_]: Async: Log, K, V](
         Stream.eval(FutureLift[F].lift(pubConnection.async().publish(channel.underlying, message)).void)
     }
 
-  override def pubSubChannels: Stream[F, List[K]] =
+  override def numPat: Stream[F, Long] =
+    pubSubStats.numPat
+
+  override def numSub: Stream[F, List[Subscription[K]]] =
+    pubSubStats.numSub
+
+  override def pubSubChannels: Stream[F, List[RedisChannel[K]]] =
     pubSubStats.pubSubChannels
+
+  override def pubSubShardChannels: Stream[F, List[RedisChannel[K]]] =
+    pubSubStats.pubSubShardChannels
 
   override def pubSubSubscriptions(channel: RedisChannel[K]): Stream[F, Subscription[K]] =
     pubSubStats.pubSubSubscriptions(channel)
 
   override def pubSubSubscriptions(channels: List[RedisChannel[K]]): Stream[F, List[Subscription[K]]] =
     pubSubStats.pubSubSubscriptions(channels)
+
+  override def shardNumSub(channels: List[RedisChannel[K]]): Stream[F, List[Subscription[K]]] =
+    pubSubStats.shardNumSub(channels)
 
 }
