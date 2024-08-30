@@ -208,4 +208,26 @@ object effects {
     /** Set expiry only when the new expiry is greater than current one */
     case object Lt extends ExpireExistenceArg
   }
+
+  // Models the core Redis Types as described in https://redis.io/docs/latest/develop/data-types/
+  // Caveat: BitSet, GeoSpatial etc... are implemented in terms of the core types , i.e. Geo is a Sorted Set etc..
+  sealed abstract class RedisType(val asString: String)
+  object RedisType {
+    val all = scala.List(String, List, Set, SortedSet, Hash, Stream)
+
+    def fromString(s: String): Option[RedisType] = all.find(_.asString == s)
+
+    case object String extends RedisType("string")
+
+    case object List extends RedisType("list")
+
+    case object Set extends RedisType("set")
+
+    case object SortedSet extends RedisType("zset")
+
+    case object Hash extends RedisType("hash")
+
+    case object Stream extends RedisType("stream")
+  }
+
 }
