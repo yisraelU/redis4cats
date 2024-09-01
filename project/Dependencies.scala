@@ -6,7 +6,7 @@ object Dependencies {
     val cats       = "2.12.0"
     val catsEffect = "3.5.4"
     val circe      = "0.14.9"
-    val fs2        = "3.10.2"
+    val fs2        = "3.11.0"
     val log4cats   = "2.7.0"
     val keyPool    = "0.4.10"
 
@@ -15,7 +15,7 @@ object Dependencies {
 
     val kindProjector = "0.13.3"
 
-    val munit = "1.0.1"
+    val munit           = "1.0.1"
     val munitScalacheck = "1.0.0"
 
   }
