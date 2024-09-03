@@ -568,6 +568,12 @@ private[redis4cats] class BaseRedis[F[_]: FutureLift: MonadThrow: Log, K, V](
   override def scan(previous: KeyScanCursor[K], scanArgs: ScanArgs): F[KeyScanCursor[K]] =
     async.flatMap(_.scan(previous.underlying, scanArgs.underlying).futureLift.map(KeyScanCursor[K]))
 
+  override def scan(keyScanArgs: KeyScanArgs): F[KeyScanCursor[K]] =
+    async.flatMap(_.scan(keyScanArgs.underlying).futureLift.map(KeyScanCursor[K]))
+
+  override def scan(cursor: KeyScanCursor[K], keyScanArgs: KeyScanArgs): F[KeyScanCursor[K]] =
+    async.flatMap(_.scan(cursor.underlying, keyScanArgs.underlying).futureLift.map(KeyScanCursor[K]))
+
   override def ttl(key: K): F[Option[FiniteDuration]] =
     async.flatMap(_.ttl(key).futureLift.map(toFiniteDuration(TimeUnit.SECONDS)))
 
