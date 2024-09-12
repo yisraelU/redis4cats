@@ -328,10 +328,12 @@ trait TestScenarios { self: FunSuite =>
       scan0 <- redis.scan
       _ <- IO(assertEquals(scan0.cursor, "0"))
       _ <- IO(assertEquals(scan0.keys.sorted, keys))
-      scan1 <- redis.scan(ScanArgs(1))
+      scan00 <- redis.scan(KeyScanArgs(RedisType.Hash))
+      _ <- IO(assertEquals(scan00.cursor, "0"))
+      scan1 <- redis.scan(KeyScanArgs(RedisType.String, 1))
       _ <- IO(assert(scan1.keys.nonEmpty, "read at least something but no hard requirement"))
       _ <- IO(assert(scan1.keys.size < keys.size, "but read less than all of them"))
-      scan2 <- redis.scan(scan1, ScanArgs("key*"))
+      scan2 <- redis.scan(scan1, KeyScanArgs("key*"))
       _ <- IO(assertEquals(scan2.cursor, "0"))
       _ <- IO(assertEquals((scan1.keys ++ scan2.keys).sorted, keys, "read to the end in result"))
     } yield ()
@@ -344,11 +346,11 @@ trait TestScenarios { self: FunSuite =>
       tp <- clusterScan(redis, args = None)
       (keys0, iterations0) = tp
       _ <- IO(assertEquals(keys0.sorted, keys))
-      tp <- clusterScan(redis, args = Some(ScanArgs("key*")))
+      tp <- clusterScan(redis, args = Some(KeyScanArgs("key*")))
       (keys1, iterations1) = tp
       _ <- IO(assertEquals(keys1.sorted, keys))
       _ <- IO(assertEquals(iterations1, iterations0))
-      tp <- clusterScan(redis, args = Some(ScanArgs(1)))
+      tp <- clusterScan(redis, args = Some(KeyScanArgs(1)))
       (keys2, iterations2) = tp
       _ <- IO(assertEquals(keys2.sorted, keys))
       _ <- IO(assert(iterations2 > iterations0, "made more iterations because of limit"))
@@ -362,7 +364,7 @@ trait TestScenarios { self: FunSuite =>
     */
   private def clusterScan(
       redis: RedisCommands[IO, String, String],
-      args: Option[ScanArgs]
+      args: Option[KeyScanArgs]
   ): IO[(List[String], Iterations)] = {
     def scanRec(previous: KeyScanCursor[String], acc: List[String], cnt: Int): IO[(List[String], Iterations)] =
       if (previous.isFinished) IO.pure((previous.keys ++ acc, cnt))

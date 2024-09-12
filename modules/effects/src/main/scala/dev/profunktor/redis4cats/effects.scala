@@ -18,7 +18,12 @@ package dev.profunktor.redis4cats
 
 import java.time.Instant
 
-import io.lettuce.core.{ GeoArgs, ScriptOutputType => JScriptOutputType, ScanArgs => JScanArgs }
+import io.lettuce.core.{
+  GeoArgs,
+  ScriptOutputType => JScriptOutputType,
+  ScanArgs => JScanArgs,
+  KeyScanArgs => JKeyScanArgs
+}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -121,6 +126,27 @@ object effects {
     def apply(`match`: String): ScanArgs              = ScanArgs(Some(`match`), None)
     def apply(count: Long): ScanArgs                  = ScanArgs(None, Some(count))
     def apply(`match`: String, count: Long): ScanArgs = ScanArgs(Some(`match`), Some(count))
+  }
+
+  sealed abstract class KeyScanArgs(tpe: Option[RedisType], pattern: Option[String], count: Option[Long]) {
+    def underlying: JKeyScanArgs = {
+      val u = new JKeyScanArgs
+      pattern.foreach(u.`match`)
+      count.foreach(u.limit)
+      tpe.foreach(t => u.`type`(t.asString))
+      u
+    }
+  }
+
+  object KeyScanArgs {
+    def apply(pattern: String): KeyScanArgs                 = new KeyScanArgs(None, Some(pattern), None) {}
+    def apply(tpe: RedisType): KeyScanArgs                  = new KeyScanArgs(Some(tpe), None, None) {}
+    def apply(tpe: RedisType, pattern: String): KeyScanArgs = new KeyScanArgs(Some(tpe), Some(pattern), None) {}
+    def apply(count: Long): KeyScanArgs                     = new KeyScanArgs(None, None, Some(count)) {}
+    def apply(pattern: String, count: Long): KeyScanArgs    = new KeyScanArgs(None, Some(pattern), Some(count)) {}
+    def apply(tpe: RedisType, count: Long): KeyScanArgs     = new KeyScanArgs(Some(tpe), None, Some(count)) {}
+    def apply(tpe: RedisType, pattern: String, count: Long): KeyScanArgs =
+      new KeyScanArgs(Some(tpe), Some(pattern), Some(count)) {}
   }
 
   sealed trait FlushMode {
