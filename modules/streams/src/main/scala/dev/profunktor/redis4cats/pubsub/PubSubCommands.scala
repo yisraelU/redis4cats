@@ -21,9 +21,13 @@ import dev.profunktor.redis4cats.data._
 import dev.profunktor.redis4cats.pubsub.data.Subscription
 
 trait PubSubStats[F[_], K] {
-  def pubSubChannels: F[List[K]]
+  def numPat: F[Long]
+  def numSub: F[List[Subscription[K]]]
+  def pubSubChannels: F[List[RedisChannel[K]]]
+  def pubSubShardChannels: F[List[RedisChannel[K]]]
   def pubSubSubscriptions(channel: RedisChannel[K]): F[Subscription[K]]
   def pubSubSubscriptions(channels: List[RedisChannel[K]]): F[List[Subscription[K]]]
+  def shardNumSub(channels: List[RedisChannel[K]]): F[List[Subscription[K]]]
 }
 
 trait PublishCommands[F[_], K, V] extends PubSubStats[F, K] {

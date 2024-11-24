@@ -35,7 +35,7 @@ private[pubsub] class Publisher[F[_]: FlatMap: FutureLift, K, V](
   override def publish(channel: RedisChannel[K]): Stream[F, V] => Stream[F, Unit] =
     _.evalMap(message => FutureLift[F].lift(pubConnection.async().publish(channel.underlying, message)).void)
 
-  override def pubSubChannels: Stream[F, List[K]] =
+  override def pubSubChannels: Stream[F, List[RedisChannel[K]]] =
     pubSubStats.pubSubChannels
 
   override def pubSubSubscriptions(channel: RedisChannel[K]): Stream[F, Subscription[K]] =
@@ -44,4 +44,15 @@ private[pubsub] class Publisher[F[_]: FlatMap: FutureLift, K, V](
   override def pubSubSubscriptions(channels: List[RedisChannel[K]]): Stream[F, List[Subscription[K]]] =
     pubSubStats.pubSubSubscriptions(channels)
 
+  override def numPat: Stream[F, Long] =
+    pubSubStats.numPat
+
+  override def numSub: Stream[F, List[Subscription[K]]] =
+    pubSubStats.numSub
+
+  override def pubSubShardChannels: Stream[F, List[RedisChannel[K]]] =
+    pubSubStats.pubSubShardChannels
+
+  override def shardNumSub(channels: List[RedisChannel[K]]): Stream[F, List[Subscription[K]]] =
+    pubSubStats.shardNumSub(channels)
 }
