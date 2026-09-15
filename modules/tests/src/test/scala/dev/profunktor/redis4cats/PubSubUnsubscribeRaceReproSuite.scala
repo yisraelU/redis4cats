@@ -22,7 +22,8 @@ import scala.concurrent.duration._
 
 import dev.profunktor.redis4cats.data.RedisChannel
 
-/** Reproduces a known race between `unsubscribe` and a concurrent `subscribe` on the same channel.
+/** Reproduces a known race between `unsubscribe` and a concurrent `subscribe` on the same channel. See
+  * https://github.com/profunktor/redis4cats/issues/1204.
   *
   * `Subscriber.unsubscribeFrom` publishes `None` on the channel's `Topic` to terminate every existing subscriber's
   * stream, but it does not remove the channel's entry from the internal subscription map at that point - the entry
