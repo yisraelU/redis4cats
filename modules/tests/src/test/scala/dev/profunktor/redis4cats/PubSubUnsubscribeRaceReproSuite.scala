@@ -26,18 +26,18 @@ import dev.profunktor.redis4cats.data.RedisChannel
   * https://github.com/profunktor/redis4cats/issues/1204.
   *
   * `Subscriber.unsubscribeFrom` publishes `None` on the channel's `Topic` to terminate every existing subscriber's
-  * stream, but it does not remove the channel's entry from the internal subscription map at that point - the entry
-  * is only removed later, asynchronously, once each subscriber's stream actually observes that `None` and runs its
+  * stream, but it does not remove the channel's entry from the internal subscription map at that point - the entry is
+  * only removed later, asynchronously, once each subscriber's stream actually observes that `None` and runs its
   * `onFinalize` action.
   *
   * If a `subscribe` call for the same channel lands in that window, it joins the map entry that's already
   * mid-termination and builds its stream from a *fresh* `Topic.subscribe`, made after the `None` was published.
   * `fs2.concurrent.Topic` never replays a value to a subscriber that joined after it was published, so the new
   * subscriber never receives that `None` - and since the underlying Redis subscription, Lettuce listener, and
-  * dispatcher are concurrently being torn down by the terminating subscription's `cleanup`, it never receives
-  * anything else either. Its stream hangs forever, and since it never finalizes, the map entry it incremented can
-  * never reach zero subscribers again - the channel is permanently unable to be cleanly unsubscribed or
-  * re-subscribed from a clean state.
+  * dispatcher are concurrently being torn down by the terminating subscription's `cleanup`, it never receives anything
+  * else either. Its stream hangs forever, and since it never finalizes, the map entry it incremented can never reach
+  * zero subscribers again - the channel is permanently unable to be cleanly unsubscribed or re-subscribed from a clean
+  * state.
   */
 class PubSubUnsubscribeRaceReproSuite extends Redis4CatsFunSuite(isCluster = false) {
 
